@@ -1,2 +1,2 @@
 # DataCamp-project
-Detecting signaling panels on the road
+Traffic Sign Recognition using simple CNN structure
