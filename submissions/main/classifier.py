@@ -1,7 +1,7 @@
 import numpy as np 
 from sklearn.base import BaseEstimator
 from keras import backend as K
-from keras.layers import Conv2D, MaxPooling2D, Dense,Dropout, Flatten
+from keras.layers import Conv2D, MaxPooling2D, Dense,Dropout, Flatten,BatchNormalization
 from keras.models import Sequential
 from keras.utils.np_utils import to_categorical
 from sklearn.model_selection import train_test_split
@@ -12,7 +12,7 @@ import cv2
 
 
 class Classifier(BaseEstimator):
-    def __init__(self, n_epochs = 15, batch_size = 1, lr = 1e-3):
+    def __init__(self, n_epochs = 15, batch_size = 80, lr = 1e-3):
         self.epochs = n_epochs
         self.batch_size = batch_size
         self.lr = lr
@@ -29,31 +29,37 @@ class Classifier(BaseEstimator):
         validation_steps = nval_samples / self.batch_size
 
         self.model.fit_generator(data_generator(X_train ,y_train,self.batch_size),
-                                steps_per_epoch=steps_per_epoch, epochs = 10, 
+                                steps_per_epoch=steps_per_epoch, epochs = self.epochs, 
                                 validation_data =data_generator(X_val ,y_val,self.batch_size),
                                  validation_steps = validation_steps )
 
         
 
     def predict(self, X):
-        img = [cv2.imread(path) for path in X]
-        return self.model.predict_classes(img)
+        imgs = [cv2.imread(path) for path in X]
+        imgs_resized = [cv2.resize(img, (128,128), interpolation=cv2.INTER_LINEAR) for img in imgs]
+        return self.model.predict_classes(np.array(imgs_resized))
 
     def predict_proba(self, X):
-        img = [cv2.imread(path) for path in X]
-        return self.clf.predict(X)
+        imgs = np.array([cv2.imread(path) for path in X])
+        imgs_resized = [cv2.resize(img, (128,128), interpolation=cv2.INTER_LINEAR) for img in imgs]
+        return self.model.predict(np.array(imgs_resized))
 
 # Defining model
 
-def create_model(input_size = (128,128,3), epochs = 15 , lr = 1e-3 ):
+def create_model(input_size = (128,128,3), epochs = 10 , lr = 1e-3 ):
     model = Sequential()
     model.add(Conv2D(64, input_shape= input_size, kernel_size=5, padding="same", activation = 'relu'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2,2), strides=(2, 2)))
     model.add(Conv2D(80, (3,3), activation='relu'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2,2), strides=(2, 2)))
     model.add(Conv2D(100, (3,3), activation='relu'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2,2), strides=(2, 2)))
     model.add(Conv2D(150, kernel_size=3, padding="valid", activation = 'relu'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Flatten())
     model.add(Dense(100, activation='relu'))

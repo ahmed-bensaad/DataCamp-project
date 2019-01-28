@@ -9,7 +9,7 @@ problem_title = 'Traffic Signs Recognition'
 
 
 
-MultiClassPredictions = rw.prediction_types.make_multiclass(
+Predictions = rw.prediction_types.make_multiclass(
     label_names=list(np.arange(43)))
 
 workflow = rw.workflows.Classifier()
