@@ -39,11 +39,12 @@ def main():
     #create the whole data annotations file
     # We will save the test csv in the same 
     train_annotations = load_annotations('.')
-    test_annotaions = test_ann('data/Test')
-    
+    test_annotations = test_ann('./data/Test')
+    print(test_annotations.head())
+    print(train_annotations.head())
     # write csv
     train_annotations.to_csv('data/Train.csv')
-    test_annotaions.to_csv('data/Test.csv')
+    test_annotations.to_csv('data/Test.csv')
     print('Annotations generated ! ')
 
 if __name__=='__main__':
