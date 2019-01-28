@@ -43,6 +43,7 @@ class Classifier(BaseEstimator):
     def predict_proba(self, X):
         imgs = np.array([cv2.imread(path) for path in X])
         imgs_resized = [cv2.resize(img, (128,128), interpolation=cv2.INTER_LINEAR) for img in imgs]
+        print(len(imgs_resized))
         return self.model.predict(np.array(imgs_resized))
 
 # Defining model

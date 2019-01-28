@@ -17,7 +17,7 @@ workflow = rw.workflows.Classifier()
 score_types = [
     rw.score_types.Accuracy(name='acc'),
     rw.score_types.ClassificationError(name='error'),
-    rw.score_types.NegativeLogLikelihood(name='nll'),
+    rw.score_types.NegativeLogLikelihood(name='negloglik'),
     rw.score_types.F1Above(name='f1_70', threshold=0.7),
 ]
 
@@ -57,7 +57,7 @@ def _read_data(path, typ):
 
     if test:
         # return src, y
-        return Y[:100], Y[:100]
+        return Y[:1000], Y[:1000]
     else:
         return X, Y
 
